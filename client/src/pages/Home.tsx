@@ -82,6 +82,7 @@ export default function Home() {
               <LogOut className="w-4 h-4" />
             </Button>
           </div>
+        </div>
       </header>
 
       <main className="container py-6 space-y-6">
