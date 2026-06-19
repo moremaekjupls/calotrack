@@ -1,9 +1,4 @@
-/**
- * Home Page
- * Main calorie tracker interface with daily summary, meal list, and controls
- */
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { getTodayISO } from '@/lib/dateUtils';
 import { useDailyData } from '@/hooks/useDailyData';
 import { Entry } from '@/types';
@@ -13,7 +8,7 @@ import { AddMealForm } from '@/components/AddMealForm';
 import { DateNavigator } from '@/components/DateNavigator';
 import { GoalSettingsDialog } from '@/components/GoalSettingsDialog';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Home() {
@@ -25,32 +20,29 @@ export default function Home() {
   const { summary, loading, addEntry, updateEntry, deleteEntry, updateGoal } =
     useDailyData(currentDate);
 
-  // Handle adding/updating a meal
   const handleSubmitMeal = (entry: Omit<Entry, 'id'>) => {
     if (editingEntry) {
       updateEntry(editingEntry.id, entry);
-      toast.success('Meal updated');
+      toast.success('Запись обновлена');
       setEditingEntry(null);
     } else {
       addEntry(entry);
-      toast.success('Meal added');
+      toast.success('Добавлено');
     }
     setShowAddForm(false);
   };
 
-  // Handle editing a meal
   const handleEditMeal = (entry: Entry) => {
     setEditingEntry(entry);
     setShowAddForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Handle deleting a meal
   const handleDeleteMeal = (id: string) => {
     deleteEntry(id);
-    toast.success('Meal deleted');
+    toast.success('Удалено');
   };
 
-  // Handle canceling edit
   const handleCancelEdit = () => {
     setEditingEntry(null);
     setShowAddForm(false);
@@ -59,56 +51,43 @@ export default function Home() {
   if (loading || !summary) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-display font-bold text-primary">CaloTrack</h1>
-            <Button
-              onClick={() => setShowAddForm(!showAddForm)}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Add Meal</span>
-            </Button>
-          </div>
+      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="container py-4 flex items-center justify-between">
+          <h1 className="text-2xl font-display font-bold text-primary">CaloTrack</h1>
+          <Button
+            onClick={() => { setEditingEntry(null); setShowAddForm(v => !v); }}
+            className={`rounded-full gap-2 ${showAddForm ? 'bg-muted text-foreground hover:bg-muted/80' : 'bg-primary text-primary-foreground hover:bg-primary/90'}`}
+          >
+            {showAddForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+            <span className="hidden sm:inline">{showAddForm ? 'Закрыть' : 'Добавить'}</span>
+          </Button>
         </div>
       </header>
 
-      {/* Main content */}
       <main className="container py-6 space-y-6">
-        {/* Date navigator */}
-        <DateNavigator date={currentDate} onDateChange={setCurrentDate} />
-
-        {/* Daily summary */}
+        <DateNavigator date={currentDate} onDateChange={(d) => { setCurrentDate(d); setShowAddForm(false); }} />
         <DailySummary summary={summary} onEditGoal={() => setShowGoalDialog(true)} />
 
-        {/* Add meal form */}
         {showAddForm && (
-          <div className="animate-scale-in">
-            <AddMealForm
-              date={currentDate}
-              editingEntry={editingEntry}
-              onSubmit={handleSubmitMeal}
-              onCancel={handleCancelEdit}
-            />
-          </div>
+          <AddMealForm
+            date={currentDate}
+            editingEntry={editingEntry}
+            onSubmit={handleSubmitMeal}
+            onCancel={handleCancelEdit}
+          />
         )}
 
-        {/* Meal list */}
         <div>
           <h2 className="text-lg font-heading font-bold text-foreground mb-4">
-            Meals
+            {summary.entries.length > 0 ? 'Приёмы пищи' : 'Нет записей'}
           </h2>
           <MealList
             entries={summary.entries}
@@ -118,23 +97,22 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Goal settings dialog */}
+      {/* Mobile FAB */}
+      <div className="fixed bottom-20 right-4 sm:hidden">
+        <Button
+          onClick={() => { setEditingEntry(null); setShowAddForm(v => !v); }}
+          className="rounded-full h-14 w-14 shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground"
+        >
+          {showAddForm ? <X className="w-6 h-6" /> : <Plus className="w-6 h-6" />}
+        </Button>
+      </div>
+
       <GoalSettingsDialog
         open={showGoalDialog}
         goal={summary.goal}
         onSave={updateGoal}
         onOpenChange={setShowGoalDialog}
       />
-
-      {/* Mobile add button */}
-      <div className="fixed bottom-6 right-6 sm:hidden">
-        <Button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-14 w-14 shadow-lg"
-        >
-          <Plus className="w-6 h-6" />
-        </Button>
-      </div>
     </div>
   );
 }
