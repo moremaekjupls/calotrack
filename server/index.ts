@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { nanoid } from 'nanoid';
-import bcrypt from 'bcryptjs';
+import { pbkdf2Sync, randomBytes } from 'crypto';
 import db from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -75,6 +75,25 @@ declare global {
 const AUTH_COOKIE = 'ct_auth';
 const ONE_YEAR_S = 60 * 60 * 24 * 365;
 const DEFAULT_GOAL: Goal = { calories: 2000, protein: 150, fat: 65, carbs: 250 };
+
+// ---------------------------------------------------------------------------
+// Password hashing (Node.js built-in crypto, no external dep)
+// ---------------------------------------------------------------------------
+
+function hashPassword(password: string): string {
+  const salt = randomBytes(16).toString('hex');
+  const hash = pbkdf2Sync(password, salt, 100_000, 64, 'sha512').toString('hex');
+  return `${salt}:${hash}`;
+}
+
+function verifyPassword(password: string, stored: string): boolean {
+  const [salt, hash] = stored.split(':');
+  if (!salt || !hash) return false;
+  const verify = pbkdf2Sync(password, salt, 100_000, 64, 'sha512').toString('hex');
+  return hash === verify;
+}
+
+
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -266,7 +285,7 @@ async function startServer() {
   // -------------------------------------------------------------------------
 
   // POST /api/auth/register
-  app.post('/api/auth/register', async (req: Request, res: Response) => {
+  app.post('/api/auth/register', (req: Request, res: Response) => {
     const { email, password } = req.body as { email?: string; password?: string };
 
     if (!email || !password) {
@@ -291,7 +310,7 @@ async function startServer() {
     }
 
     const id = `user_${nanoid(12)}`;
-    const password_hash = await bcrypt.hash(password, 10);
+    const password_hash = hashPassword(password);
 
     stmts.insertUser.run({ id, email: emailLower, password_hash });
 
@@ -304,7 +323,7 @@ async function startServer() {
   });
 
   // POST /api/auth/login
-  app.post('/api/auth/login', async (req: Request, res: Response) => {
+  app.post('/api/auth/login', (req: Request, res: Response) => {
     const { email, password } = req.body as { email?: string; password?: string };
 
     if (!email || !password) {
@@ -318,7 +337,7 @@ async function startServer() {
       return;
     }
 
-    const valid = await bcrypt.compare(password, user.password_hash);
+    const valid = verifyPassword(password, user.password_hash);
     if (!valid) {
       res.status(401).json({ error: 'Invalid email or password' });
       return;
