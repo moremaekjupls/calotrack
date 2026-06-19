@@ -19,7 +19,26 @@ const dbPath = path.join(dataDir, 'calotrack.db');
 const db = new Database(dbPath);
 
 db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+db.pragma('foreign_keys = OFF'); // off during migration
+
+// ---------------------------------------------------------------------------
+// Schema migration: detect old schema (session_id) and drop legacy tables
+// ---------------------------------------------------------------------------
+
+const tableInfo = db.prepare("PRAGMA table_info(entries)").all() as { name: string }[];
+const hasSessionId = tableInfo.some((col) => col.name === 'session_id');
+
+if (hasSessionId) {
+  console.log('[db] Migrating schema: dropping legacy session-based tables');
+  db.exec(`
+    DROP TABLE IF EXISTS entries;
+    DROP TABLE IF EXISTS goals;
+  `);
+}
+
+// ---------------------------------------------------------------------------
+// Create tables
+// ---------------------------------------------------------------------------
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -65,5 +84,7 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_sessions_token
     ON sessions (token);
 `);
+
+db.pragma('foreign_keys = ON');
 
 export default db;
