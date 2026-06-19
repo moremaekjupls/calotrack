@@ -18,13 +18,27 @@ const dbPath = path.join(dataDir, 'calotrack.db');
 
 const db = new Database(dbPath);
 
-// Enable WAL for better concurrent read performance
 db.pragma('journal_mode = WAL');
+db.pragma('foreign_keys = ON');
 
 db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id            TEXT PRIMARY KEY,
+    email         TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    created_at    TEXT DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS sessions (
+    token      TEXT PRIMARY KEY,
+    user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TEXT DEFAULT (datetime('now')),
+    expires_at TEXT NOT NULL
+  );
+
   CREATE TABLE IF NOT EXISTS entries (
     id         TEXT PRIMARY KEY,
-    session_id TEXT NOT NULL,
+    user_id    TEXT NOT NULL,
     date       TEXT NOT NULL,
     name       TEXT NOT NULL,
     calories   REAL NOT NULL,
@@ -37,7 +51,7 @@ db.exec(`
   );
 
   CREATE TABLE IF NOT EXISTS goals (
-    session_id TEXT PRIMARY KEY,
+    user_id    TEXT PRIMARY KEY,
     calories   REAL NOT NULL DEFAULT 2000,
     protein    REAL NOT NULL DEFAULT 150,
     fat        REAL NOT NULL DEFAULT 65,
@@ -45,8 +59,11 @@ db.exec(`
     updated_at TEXT DEFAULT (datetime('now'))
   );
 
-  CREATE INDEX IF NOT EXISTS idx_entries_session_date
-    ON entries (session_id, date);
+  CREATE INDEX IF NOT EXISTS idx_entries_user_date
+    ON entries (user_id, date);
+
+  CREATE INDEX IF NOT EXISTS idx_sessions_token
+    ON sessions (token);
 `);
 
 export default db;

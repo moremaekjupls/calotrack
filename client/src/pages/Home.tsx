@@ -8,8 +8,9 @@ import { AddMealForm } from '@/components/AddMealForm';
 import { DateNavigator } from '@/components/DateNavigator';
 import { GoalSettingsDialog } from '@/components/GoalSettingsDialog';
 import { Button } from '@/components/ui/button';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, LogOut } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(getTodayISO());
@@ -17,6 +18,7 @@ export default function Home() {
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
   const [showGoalDialog, setShowGoalDialog] = useState(false);
 
+  const { logout } = useAuth();
   const { summary, loading, addEntry, updateEntry, deleteEntry, updateGoal } =
     useDailyData(currentDate);
 
@@ -62,14 +64,24 @@ export default function Home() {
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="container py-4 flex items-center justify-between">
           <h1 className="text-2xl font-display font-bold text-primary">CaloTrack</h1>
-          <Button
-            onClick={() => { setEditingEntry(null); setShowAddForm(v => !v); }}
-            className={`rounded-full gap-2 ${showAddForm ? 'bg-muted text-foreground hover:bg-muted/80' : 'bg-primary text-primary-foreground hover:bg-primary/90'}`}
-          >
-            {showAddForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-            <span className="hidden sm:inline">{showAddForm ? 'Закрыть' : 'Добавить'}</span>
-          </Button>
-        </div>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => { setEditingEntry(null); setShowAddForm(v => !v); }}
+              className={`rounded-full gap-2 ${showAddForm ? 'bg-muted text-foreground hover:bg-muted/80' : 'bg-primary text-primary-foreground hover:bg-primary/90'}`}
+            >
+              {showAddForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+              <span className="hidden sm:inline">{showAddForm ? 'Закрыть' : 'Добавить'}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => logout()}
+              className="rounded-full text-gray-400 hover:text-gray-600"
+              title="Выйти"
+            >
+              <LogOut className="w-4 h-4" />
+            </Button>
+          </div>
       </header>
 
       <main className="container py-6 space-y-6">
