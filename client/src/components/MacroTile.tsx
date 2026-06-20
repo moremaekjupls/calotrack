@@ -36,13 +36,20 @@ export function MacroTile({ label, icon: Icon, consumed, goal, unit, color, isOv
   const percent = goal > 0 ? Math.round((consumed / goal) * 100) : 0;
   const barWidth = Math.min(100, percent);
   const accent = isOverGoal ? 'var(--destructive)' : colorVar[color];
+  // Subtle per-macro tint (12%) mixed into the shared glass tone, so each
+  // tile keeps its color identity without going back to full-saturation
+  // colored cards.
+  const tintedBg = `color-mix(in oklch, color-mix(in oklch, ${accent} 12%, oklch(0.97 0.01 240) 88%) 85%, transparent)`;
 
   return (
-    <Card className={cn(
-      'relative border border-[oklch(0.97_0.01_240)]/55 bg-[oklch(0.97_0.01_240)]/85 backdrop-blur-xl backdrop-saturate-150 animate-fade-in-up overflow-hidden',
-      'shadow-[inset_0_1px_0_0_rgba(255, 255, 255,0.55),0_8px_24px_-8px_rgba(0,0,0,0.35)]',
-      compact ? 'p-3 sm:p-4' : 'p-4 sm:p-5'
-    )}>
+    <Card
+      className={cn(
+        'relative border border-[oklch(0.97_0.01_240)]/55 backdrop-blur-xl backdrop-saturate-150 animate-fade-in-up overflow-hidden',
+        'shadow-[inset_0_1px_0_0_rgba(255,255,255,0.55),0_8px_24px_-8px_rgba(0,0,0,0.35)]',
+        compact ? 'p-3 sm:p-4' : 'p-4 sm:p-5'
+      )}
+      style={{ backgroundColor: tintedBg }}
+    >
       {sticker && (
         <span
           aria-hidden
@@ -55,20 +62,28 @@ export function MacroTile({ label, icon: Icon, consumed, goal, unit, color, isOv
         <span className={cn('font-medium text-muted-foreground', compact ? 'text-xs' : 'text-sm')}>{label}</span>
         <div
           className={cn('rounded-full flex items-center justify-center shrink-0', compact ? 'w-6 h-6' : 'w-8 h-8')}
-          style={{ backgroundColor: `color-mix(in oklch, ${accent} 16%, white)` }}
+          style={{
+            backgroundColor: `color-mix(in oklch, ${accent} 22%, white)`,
+            boxShadow: `inset 0 0 0 1px color-mix(in oklch, ${accent} 40%, transparent)`,
+          }}
         >
           <Icon className={compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} style={{ color: accent }} />
         </div>
       </div>
 
       <div className={cn('flex items-baseline gap-1', compact ? 'mb-1.5' : 'mb-2')}>
-        <span className={cn('font-display font-bold text-foreground', compact ? 'text-xl' : 'text-2xl sm:text-3xl')}>{percent}%</span>
+        <span className={cn('font-display font-bold', compact ? 'text-xl' : 'text-2xl sm:text-3xl')} style={{ color: accent }}>
+          {percent}%
+        </span>
       </div>
 
       <div className="h-2 rounded-full bg-muted overflow-hidden mb-2">
         <div
           className="h-full rounded-full transition-all duration-700 ease-out"
-          style={{ width: `${barWidth}%`, backgroundColor: accent }}
+          style={{
+            width: `${barWidth}%`,
+            backgroundImage: `linear-gradient(90deg, color-mix(in oklch, ${accent} 65%, white) 0%, ${accent} 100%)`,
+          }}
         />
       </div>
 
