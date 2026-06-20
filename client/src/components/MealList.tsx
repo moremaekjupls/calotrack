@@ -25,7 +25,7 @@ const mealTypeLabels: Record<MealType, string> = {
 export function MealList({ entries, onEdit, onDelete }: MealListProps) {
   if (entries.length === 0) {
     return (
-      <Card className="border-dashed border-white/40 bg-white/45 backdrop-blur-xl backdrop-saturate-150 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.55),0_8px_24px_-8px_rgba(0,0,0,0.35)]">
+      <Card className="border-dashed border-[oklch(0.97_0.012_70)]/40 bg-[oklch(0.97_0.012_70)]/45 backdrop-blur-xl backdrop-saturate-150 shadow-[inset_0_1px_0_0_rgba(255, 248, 238,0.55),0_8px_24px_-8px_rgba(0,0,0,0.35)]">
         <div className="p-8 text-center">
           <div className="text-5xl mb-3">🥗</div>
           <p className="text-muted-foreground text-sm">

@@ -39,7 +39,7 @@ export default function Auth() {
         </div>
 
         {/* Card */}
-        <div className="bg-white/70 backdrop-blur-xl backdrop-saturate-150 rounded-2xl border border-white/50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.55),0_8px_24px_-8px_rgba(0,0,0,0.3)] p-6">
+        <div className="bg-[oklch(0.97_0.012_70)]/70 backdrop-blur-xl backdrop-saturate-150 rounded-2xl border border-[oklch(0.97_0.012_70)]/50 shadow-[inset_0_1px_0_0_rgba(255, 248, 238,0.55),0_8px_24px_-8px_rgba(0,0,0,0.3)] p-6">
           {/* Tabs */}
           <div className="flex bg-muted rounded-xl p-1 mb-6">
             <button

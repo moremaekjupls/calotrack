@@ -65,7 +65,7 @@ export default function Home() {
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/55 backdrop-blur-xl backdrop-saturate-150 border-b border-white/30">
+      <header className="sticky top-0 z-40 bg-[oklch(0.97_0.012_70)]/55 backdrop-blur-xl backdrop-saturate-150 border-b border-[oklch(0.97_0.012_70)]/30">
         <div className="container py-4 flex items-center justify-between">
           <h1 className="text-2xl font-display font-bold text-primary">CaloTrack</h1>
           <div className="flex items-center gap-2">

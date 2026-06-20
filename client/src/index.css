@@ -44,60 +44,65 @@
 
 :root {
   /*
-   * Vivid Wellness palette — colorful, harmonious, card-driven dashboard.
-   * Each macro/metric gets its own hue so stat tiles read at a glance:
-   *   chart-1 calories (coral-orange) · chart-2 carbs (rose-pink)
-   *   chart-3 fat (violet) · secondary protein (grass green) · chart-5 water (sky blue)
+   * Dappled Spice palette — sampled off the Liquid Glass hero photo
+   * (dark olive-charcoal shadow, golden dappled highlight, chili-red and
+   * herb-green food accents). Deepened/richer than the old "Vivid Wellness"
+   * pastel set so tiles read as jewel tones over a moody photo instead of
+   * candy-bright pastels that fought it:
+   *   chart-1 calories (terracotta) · chart-2 carbs (chili-rose)
+   *   chart-3 fat (mustard/ochre, was violet — ties to the bread/light, and
+   *   violet had nothing to do with the photo) · secondary protein (herb
+   *   green) · chart-5 water (deep sky blue)
    */
-  --primary: oklch(0.68 0.19 38);        /* Coral-orange — brand + calories */
+  --primary: oklch(0.64 0.17 36);        /* Terracotta — brand + calories */
   --primary-foreground: oklch(1 0 0);
-  --sidebar-primary: oklch(0.65 0.18 38);
+  --sidebar-primary: oklch(0.62 0.16 36);
   --sidebar-primary-foreground: oklch(1 0 0);
 
-  --chart-1: oklch(0.68 0.19 38);        /* Calories — coral-orange */
-  --chart-2: oklch(0.70 0.19 359);       /* Carbs — rose-pink */
-  --chart-3: oklch(0.60 0.21 295);       /* Fat — violet */
-  --chart-4: oklch(0.80 0.15 85);        /* Decorative — golden yellow */
-  --chart-5: oklch(0.68 0.13 235);       /* Water — sky blue */
+  --chart-1: oklch(0.64 0.17 36);        /* Calories — terracotta */
+  --chart-2: oklch(0.64 0.17 359);       /* Carbs — chili-rose */
+  --chart-3: oklch(0.74 0.13 78);        /* Fat — mustard/ochre */
+  --chart-4: oklch(0.78 0.13 75);        /* Decorative — dappled gold */
+  --chart-5: oklch(0.60 0.12 232);       /* Water — deep sky blue */
 
   --radius: 1.25rem;                     /* Rounder, friendlier cards */
 
-  --background: oklch(0.97 0.012 75);    /* Warm cream */
-  --foreground: oklch(0.24 0.02 50);     /* Deep warm charcoal */
+  --background: oklch(0.97 0.012 75);    /* Warm cream — rarely visible now (photo sits behind it), kept for the few opaque dropdowns/chips */
+  --foreground: oklch(0.22 0.025 48);    /* Deep warm charcoal */
 
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.24 0.02 50);
+  --card-foreground: oklch(0.22 0.025 48);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.24 0.02 50);
+  --popover-foreground: oklch(0.22 0.025 48);
 
-  --secondary: oklch(0.66 0.17 150);     /* Protein — grass green */
+  --secondary: oklch(0.56 0.14 148);     /* Protein — herb green */
   --secondary-foreground: oklch(1 0 0);
 
   --muted: oklch(0.94 0.01 70);
   --muted-foreground: oklch(0.52 0.02 55);
 
-  --accent: oklch(0.93 0.04 38);         /* Soft coral tint for hovers/highlights */
-  --accent-foreground: oklch(0.4 0.1 38);
+  --accent: oklch(0.91 0.04 36);         /* Soft terracotta tint for hovers/highlights */
+  --accent-foreground: oklch(0.38 0.1 36);
 
-  --destructive: oklch(0.60 0.21 22);    /* Warm red — over-goal states */
+  --destructive: oklch(0.58 0.19 24);    /* Chili red — over-goal states */
   --destructive-foreground: oklch(1 0 0);
 
   --border: oklch(0.90 0.008 70);
   --input: oklch(0.95 0.008 70);
-  --ring: oklch(0.68 0.19 38);
+  --ring: oklch(0.64 0.17 36);
 
   --sidebar: oklch(0.97 0.012 75);
-  --sidebar-foreground: oklch(0.24 0.02 50);
-  --sidebar-accent: oklch(0.68 0.19 38);
+  --sidebar-foreground: oklch(0.22 0.025 48);
+  --sidebar-accent: oklch(0.64 0.17 36);
   --sidebar-accent-foreground: oklch(1 0 0);
   --sidebar-border: oklch(0.90 0.008 70);
-  --sidebar-ring: oklch(0.68 0.19 38);
+  --sidebar-ring: oklch(0.64 0.17 36);
 }
 
 .dark {
-  --primary: oklch(0.70 0.18 38);
+  --primary: oklch(0.66 0.16 36);
   --primary-foreground: oklch(0.15 0.01 50);
-  --sidebar-primary: oklch(0.68 0.18 38);
+  --sidebar-primary: oklch(0.64 0.16 36);
   --sidebar-primary-foreground: oklch(0.15 0.01 50);
 
   --background: oklch(0.18 0.015 55);
@@ -108,34 +113,34 @@
   --popover: oklch(0.24 0.015 55);
   --popover-foreground: oklch(0.92 0.008 70);
 
-  --secondary: oklch(0.62 0.16 150);
+  --secondary: oklch(0.54 0.13 148);
   --secondary-foreground: oklch(0.15 0.01 50);
 
   --muted: oklch(0.30 0.015 55);
   --muted-foreground: oklch(0.70 0.01 60);
 
-  --accent: oklch(0.30 0.06 38);
-  --accent-foreground: oklch(0.92 0.04 38);
+  --accent: oklch(0.30 0.06 36);
+  --accent-foreground: oklch(0.92 0.04 36);
 
-  --destructive: oklch(0.65 0.20 22);
+  --destructive: oklch(0.62 0.18 24);
   --destructive-foreground: oklch(1 0 0);
 
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.70 0.18 38);
+  --ring: oklch(0.66 0.16 36);
 
-  --chart-1: oklch(0.68 0.19 38);
-  --chart-2: oklch(0.68 0.18 359);
-  --chart-3: oklch(0.62 0.20 295);
-  --chart-4: oklch(0.75 0.14 85);
-  --chart-5: oklch(0.66 0.13 235);
+  --chart-1: oklch(0.66 0.16 36);
+  --chart-2: oklch(0.62 0.16 359);
+  --chart-3: oklch(0.70 0.12 78);
+  --chart-4: oklch(0.74 0.12 75);
+  --chart-5: oklch(0.58 0.11 232);
 
   --sidebar: oklch(0.24 0.015 55);
   --sidebar-foreground: oklch(0.92 0.008 70);
-  --sidebar-accent: oklch(0.70 0.18 38);
+  --sidebar-accent: oklch(0.66 0.16 36);
   --sidebar-accent-foreground: oklch(0.15 0.01 50);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.70 0.18 38);
+  --sidebar-ring: oklch(0.66 0.16 36);
 }
 
 @layer base {
