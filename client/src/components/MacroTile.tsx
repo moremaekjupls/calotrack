@@ -20,6 +20,9 @@ interface MacroTileProps {
   color: MacroColor;
   isOverGoal?: boolean;
   sticker?: string;
+  /** Smaller padding/type scale — used when calories has its own hero ring
+   *  and the macro tiles are demoted to a supporting 3-up row. */
+  compact?: boolean;
 }
 
 const colorVar: Record<MacroColor, string> = {
@@ -29,33 +32,33 @@ const colorVar: Record<MacroColor, string> = {
   protein: 'var(--secondary)',
 };
 
-export function MacroTile({ label, icon: Icon, consumed, goal, unit, color, isOverGoal, sticker }: MacroTileProps) {
+export function MacroTile({ label, icon: Icon, consumed, goal, unit, color, isOverGoal, sticker, compact }: MacroTileProps) {
   const percent = goal > 0 ? Math.round((consumed / goal) * 100) : 0;
   const barWidth = Math.min(100, percent);
   const accent = isOverGoal ? 'var(--destructive)' : colorVar[color];
 
   return (
-    <Card className="relative border-0 shadow-sm p-4 sm:p-5 animate-fade-in-up overflow-hidden">
+    <Card className={cn('relative border-0 shadow-sm animate-fade-in-up overflow-hidden', compact ? 'p-3 sm:p-4' : 'p-4 sm:p-5')}>
       {sticker && (
         <span
           aria-hidden
-          className="absolute -top-1.5 -right-1.5 text-2xl rotate-[12deg] select-none opacity-90"
+          className={cn('absolute select-none opacity-90 rotate-[12deg]', compact ? '-top-1 -right-1 text-lg' : '-top-1.5 -right-1.5 text-2xl')}
         >
           {sticker}
         </span>
       )}
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-medium text-muted-foreground">{label}</span>
+      <div className={cn('flex items-center justify-between', compact ? 'mb-2' : 'mb-3')}>
+        <span className={cn('font-medium text-muted-foreground', compact ? 'text-xs' : 'text-sm')}>{label}</span>
         <div
-          className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+          className={cn('rounded-full flex items-center justify-center shrink-0', compact ? 'w-6 h-6' : 'w-8 h-8')}
           style={{ backgroundColor: `color-mix(in oklch, ${accent} 16%, white)` }}
         >
-          <Icon className="w-4 h-4" style={{ color: accent }} />
+          <Icon className={compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} style={{ color: accent }} />
         </div>
       </div>
 
-      <div className="flex items-baseline gap-1 mb-2">
-        <span className="text-2xl sm:text-3xl font-display font-bold text-foreground">{percent}%</span>
+      <div className={cn('flex items-baseline gap-1', compact ? 'mb-1.5' : 'mb-2')}>
+        <span className={cn('font-display font-bold text-foreground', compact ? 'text-xl' : 'text-2xl sm:text-3xl')}>{percent}%</span>
       </div>
 
       <div className="h-2 rounded-full bg-muted overflow-hidden mb-2">

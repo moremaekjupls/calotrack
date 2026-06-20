@@ -7,10 +7,11 @@
 import React from 'react';
 import { DailySummary as DailySummaryType, WaterLog } from '@/types';
 import { MacroTile } from './MacroTile';
+import { CaloriesRing } from './CaloriesRing';
 import { WaterTracker } from './WaterTracker';
 import { Button } from '@/components/ui/button';
 import { formatDateFull } from '@/lib/dateUtils';
-import { Settings, Flame, Wheat, Droplet, Beef } from 'lucide-react';
+import { Settings, Wheat, Droplet, Beef } from 'lucide-react';
 
 interface DailySummaryProps {
   summary: DailySummaryType;
@@ -50,17 +51,13 @@ export function DailySummary({
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4">
-        <MacroTile
-          label="Калории"
-          icon={Flame}
-          consumed={summary.totals.calories}
-          goal={summary.goal.calories}
-          unit=""
-          color="calories"
-          isOverGoal={summary.isOverGoal.calories}
-          sticker="🔥"
-        />
+      <CaloriesRing
+        consumed={summary.totals.calories}
+        goal={summary.goal.calories}
+        isOverGoal={summary.isOverGoal.calories}
+      />
+
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         <MacroTile
           label="Углеводы"
           icon={Wheat}
@@ -70,6 +67,7 @@ export function DailySummary({
           color="carbs"
           isOverGoal={summary.isOverGoal.carbs}
           sticker="🌾"
+          compact
         />
         <MacroTile
           label="Жиры"
@@ -80,6 +78,7 @@ export function DailySummary({
           color="fat"
           isOverGoal={summary.isOverGoal.fat}
           sticker="🥑"
+          compact
         />
         <MacroTile
           label="Белки"
@@ -90,6 +89,7 @@ export function DailySummary({
           color="protein"
           isOverGoal={summary.isOverGoal.protein}
           sticker="🍗"
+          compact
         />
       </div>
 

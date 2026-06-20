@@ -31,6 +31,7 @@ export function WaterTracker({ consumed, goal, hasLogs, onAddCup, onAddCustom, o
   const filledCups = Math.min(totalCups, Math.floor(consumed / CUP_ML));
   const liters = (consumed / 1000).toFixed(1);
   const goalLiters = (goal / 1000).toFixed(1);
+  const percent = goal > 0 ? Math.round((consumed / goal) * 100) : 0;
 
   const handleCustomSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,17 +45,12 @@ export function WaterTracker({ consumed, goal, hasLogs, onAddCup, onAddCustom, o
 
   return (
     <Card className="bg-gradient-to-br from-[color-mix(in_oklch,var(--chart-5)_14%,white)] to-card border-0 shadow-sm p-5 sm:p-6 animate-fade-in-up">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-full bg-[var(--chart-5)]/15 flex items-center justify-center">
             <GlassWater className="w-5 h-5 text-[var(--chart-5)]" />
           </div>
-          <div>
-            <h3 className="text-sm font-heading font-bold text-foreground">Вода</h3>
-            <p className="text-xs text-muted-foreground">
-              {liters} л / {goalLiters} л
-            </p>
-          </div>
+          <h3 className="text-sm font-heading font-bold text-foreground">Вода</h3>
         </div>
         <div className="flex items-center gap-1">
           {hasLogs && (
@@ -78,6 +74,16 @@ export function WaterTracker({ consumed, goal, hasLogs, onAddCup, onAddCustom, o
             <Plus className="w-4 h-4" />
           </Button>
         </div>
+      </div>
+
+      {/* Hero readout: big percent + liters, sits above the cup grid */}
+      <div className="flex items-baseline gap-2 mb-4">
+        <span className="text-3xl sm:text-4xl font-display font-bold text-[var(--chart-5)] leading-none">
+          {percent}%
+        </span>
+        <span className="text-sm text-muted-foreground">
+          {liters} л / {goalLiters} л
+        </span>
       </div>
 
       <div className="grid grid-cols-6 gap-2 sm:gap-3">
