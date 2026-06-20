@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine, Cell,
+  ResponsiveContainer,
 } from 'recharts';
 import { getHistory } from '@/lib/storageService';
 import { addDaysToISO, getTodayISO } from '@/lib/dateUtils';
@@ -19,19 +19,7 @@ function getShortDay(dateISO: string): string {
 
 function fmt(n: number) { return Math.round(n).toLocaleString('ru-RU'); }
 
-// Custom tooltip for the bar chart
-const CaloriesTooltip = ({ active, payload, label }: any) => {
-  if (!active || !payload?.length) return null;
-  const d = payload[0]?.payload;
-  return (
-    <div className="bg-background border border-border rounded-lg p-3 shadow-lg text-xs">
-      <p className="font-semibold mb-1">{d?.fullDate}</p>
-      <p className="text-primary">{fmt(d?.calories ?? 0)} ккал</p>
-      {d?.goal && <p className="text-muted-foreground">Цель: {fmt(d.goal)} ккал</p>}
-    </div>
-  );
-};
-
+// Custom tooltip for the macro chart
 const MacroTooltip = ({ active, payload }: any) => {
   if (!active || !payload?.length) return null;
   const d = payload[0]?.payload;
@@ -183,32 +171,6 @@ export default function Dashboard() {
                 </p>
               </Card>
             </div>
-
-            {/* Calories bar chart */}
-            <Card className="p-4">
-              <h2 className="font-semibold text-sm text-foreground mb-4">Калории по дням</h2>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={chartData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                  <XAxis dataKey="day" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <Tooltip content={<CaloriesTooltip />} cursor={{ fill: 'hsl(var(--muted))' }} />
-                  <ReferenceLine y={goal} stroke="hsl(var(--primary))" strokeDasharray="4 4" strokeWidth={1.5} />
-                  <Bar dataKey="calories" radius={[4, 4, 0, 0]} maxBarSize={40}>
-                    {chartData.map((entry, i) => (
-                      <Cell
-                        key={i}
-                        fill={entry.overGoal ? 'hsl(var(--destructive))' : entry.calories > 0 ? 'hsl(var(--primary))' : 'hsl(var(--muted))'}
-                        fillOpacity={entry.calories > 0 ? 1 : 0.4}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-              <p className="text-xs text-muted-foreground mt-2 text-center">
-                — — пунктир: цель {fmt(goal)} ккал · <span className="text-destructive">красный</span> = перебор
-              </p>
-            </Card>
 
             {/* Macros stacked bar chart */}
             <Card className="p-4">
