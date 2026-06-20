@@ -325,7 +325,7 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
 
-  app.use(express.json());
+  app.use(express.json({ limit: '10mb' })); // base64 meal photos need headroom
 
   // -------------------------------------------------------------------------
   // Auth routes (no requireAuth middleware)
@@ -445,6 +445,118 @@ async function startServer() {
   });
 
   app.use('/api', requireAuth);
+
+  // -------------------------------------------------------------------------
+  // AI meal photo analysis
+  // -------------------------------------------------------------------------
+
+  interface PhotoAnalysisResult {
+    name: string;
+    calories: number;
+    protein: number;
+    fat: number;
+    carbs: number;
+    confidence?: 'high' | 'medium' | 'low';
+    note?: string;
+  }
+
+  function extractJson(text: string): any {
+    const cleaned = text.trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
+    return JSON.parse(cleaned);
+  }
+
+  app.post('/api/analyze-meal-photo', async (req: Request, res: Response) => {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      res.status(503).json({ error: 'Анализ фото временно недоступен (не настроен API-ключ)' });
+      return;
+    }
+
+    const { image, mediaType } = req.body as { image?: string; mediaType?: string };
+    if (!image) {
+      res.status(400).json({ error: 'Необходимо передать фото (base64) в поле image' });
+      return;
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const type = allowedTypes.includes(mediaType || '') ? (mediaType as string) : 'image/jpeg';
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 400,
+          messages: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'image',
+                  source: { type: 'base64', media_type: type, data: image },
+                },
+                {
+                  type: 'text',
+                  text:
+                    'Ты эксперт по питанию. Определи блюдо на фото и оцени его калорийность и БЖУ для порции, ' +
+                    'видимой на фото. Если блюд несколько — оцени всё вместе как одну порцию. ' +
+                    'Ответь СТРОГО валидным JSON без markdown-разметки и без пояснений вокруг, в формате: ' +
+                    '{"name": string на русском, "calories": число, "protein": число (г), "fat": число (г), ' +
+                    '"carbs": число (г), "confidence": "high"|"medium"|"low", "note": краткое пояснение оценки на русском}.',
+                },
+              ],
+            },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error('Anthropic API error:', response.status, errText);
+        res.status(502).json({ error: 'Не удалось проанализировать фото (ошибка AI-сервиса)' });
+        return;
+      }
+
+      const data = (await response.json()) as { content: { type: string; text?: string }[] };
+      const textBlock = data.content?.find((b) => b.type === 'text');
+      if (!textBlock?.text) {
+        res.status(502).json({ error: 'AI вернул пустой ответ' });
+        return;
+      }
+
+      let result: PhotoAnalysisResult;
+      try {
+        result = extractJson(textBlock.text);
+      } catch {
+        console.error('Failed to parse AI JSON:', textBlock.text);
+        res.status(502).json({ error: 'Не удалось разобрать ответ AI' });
+        return;
+      }
+
+      if (!result.name || result.calories == null) {
+        res.status(502).json({ error: 'AI вернул неполные данные' });
+        return;
+      }
+
+      res.json({
+        name: result.name,
+        calories: Math.round(Number(result.calories) || 0),
+        protein: Number(result.protein) || 0,
+        fat: Number(result.fat) || 0,
+        carbs: Number(result.carbs) || 0,
+        confidence: result.confidence || 'medium',
+        note: result.note || '',
+      });
+    } catch (err) {
+      console.error('Photo analysis error:', err);
+      res.status(500).json({ error: 'Внутренняя ошибка при анализе фото' });
+    }
+  });
 
   // -------------------------------------------------------------------------
   // Entries

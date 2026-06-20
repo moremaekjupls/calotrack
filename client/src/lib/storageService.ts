@@ -6,7 +6,18 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
     headers: { 'Content-Type': 'application/json', ...init?.headers },
     ...init,
   });
-  if (!res.ok) throw new Error(`API ${init?.method ?? 'GET'} ${path} → ${res.status}`);
+  if (!res.ok) {
+    // Try to surface the server's own error message (e.g. {"error": "..."})
+    // instead of a bare status code — callers display this to the user.
+    let message = `API ${init?.method ?? 'GET'} ${path} → ${res.status}`;
+    try {
+      const body = await res.json();
+      if (body?.error) message = body.error;
+    } catch {
+      /* response wasn't JSON — keep the generic message */
+    }
+    throw new Error(message);
+  }
   if (res.status === 204) return undefined as unknown as T;
   return res.json() as Promise<T>;
 }
@@ -59,6 +70,23 @@ export async function getRecentFoods(limit = 10): Promise<QuickFood[]> {
 }
 export async function getFrequentFoods(limit = 5): Promise<QuickFood[]> {
   return apiFetch<QuickFood[]>(`/api/foods/frequent?limit=${limit}`);
+}
+
+export interface PhotoAnalysisResult {
+  name: string;
+  calories: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  confidence?: 'high' | 'medium' | 'low';
+  note?: string;
+}
+
+export async function analyzeMealPhoto(image: string, mediaType: string): Promise<PhotoAnalysisResult> {
+  return apiFetch<PhotoAnalysisResult>('/api/analyze-meal-photo', {
+    method: 'POST',
+    body: JSON.stringify({ image, mediaType }),
+  });
 }
 
 export async function exportAllData() {

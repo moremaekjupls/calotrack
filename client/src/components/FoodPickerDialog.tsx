@@ -19,9 +19,9 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getRecentFoods, getFrequentFoods, QuickFood } from '@/lib/storageService';
+import { getRecentFoods, getFrequentFoods, QuickFood, analyzeMealPhoto, PhotoAnalysisResult } from '@/lib/storageService';
 import { uzbekFoods } from '@/data/uzbekFoods';
-import { X, Search, Plus, ChefHat, Clock, ListPlus } from 'lucide-react';
+import { X, Search, Plus, ChefHat, Clock, ListPlus, Camera, Loader2, AlertCircle, Sparkles } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Open Food Facts search (same endpoint as before, no autofill — adds directly)
@@ -104,6 +104,18 @@ export function FoodPickerDialog({ open, onOpenChange, date, onAddBatch }: FoodP
   const [mFat, setMFat] = useState('');
   const [mCarbs, setMCarbs] = useState('');
 
+  // AI photo analysis
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const [photoResult, setPhotoResult] = useState<PhotoAnalysisResult | null>(null);
+  const [pName, setPName] = useState('');
+  const [pCalories, setPCalories] = useState('');
+  const [pProtein, setPProtein] = useState('');
+  const [pFat, setPFat] = useState('');
+  const [pCarbs, setPCarbs] = useState('');
+
   useEffect(() => {
     if (open) {
       getRecentFoods(8).then(setRecentFoods).catch(() => {});
@@ -115,8 +127,61 @@ export function FoodPickerDialog({ open, onOpenChange, date, onAddBatch }: FoodP
       setSearchResults([]);
       setShowManual(false);
       setMName(''); setMCalories(''); setMProtein(''); setMFat(''); setMCarbs('');
+      resetPhoto();
     }
   }, [open]);
+
+  function resetPhoto() {
+    setPhotoPreview(null);
+    setAnalyzing(false);
+    setPhotoError(null);
+    setPhotoResult(null);
+    setPName(''); setPCalories(''); setPProtein(''); setPFat(''); setPCarbs('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  const handlePhotoSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoError(null);
+    setPhotoResult(null);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const dataUrl = reader.result as string;
+      setPhotoPreview(dataUrl);
+      const base64 = dataUrl.split(',')[1] ?? '';
+      setAnalyzing(true);
+      try {
+        const result = await analyzeMealPhoto(base64, file.type);
+        setPhotoResult(result);
+        setPName(result.name);
+        setPCalories(String(Math.round(result.calories)));
+        setPProtein(String(result.protein));
+        setPFat(String(result.fat));
+        setPCarbs(String(result.carbs));
+      } catch (err) {
+        setPhotoError(err instanceof Error ? err.message : 'Не удалось проанализировать фото');
+      } finally {
+        setAnalyzing(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handlePhotoAdd = () => {
+    const calories = parseFloat(pCalories);
+    if (!pName.trim() || !calories || calories < 0) return;
+    addToStaged({
+      emoji: '🤖',
+      name: pName.trim(),
+      calories,
+      protein: parseFloat(pProtein) || 0,
+      fat: parseFloat(pFat) || 0,
+      carbs: parseFloat(pCarbs) || 0,
+      mealType: defaultMealType,
+    });
+    resetPhoto();
+  };
 
   const handleQueryChange = useCallback((value: string) => {
     setQuery(value);
@@ -222,6 +287,94 @@ export function FoodPickerDialog({ open, onOpenChange, date, onAddBatch }: FoodP
                 <SelectItem value="snack">🍪 Перекус</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          {/* AI photo analysis — headline feature */}
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-3">
+            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
+              <Sparkles className="w-3 h-3" /> Анализ фото блюда (AI)
+            </Label>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={handlePhotoSelected}
+            />
+
+            {!photoPreview && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                className="mt-2 w-full border-primary/30 text-primary hover:bg-primary/10 gap-2"
+              >
+                <Camera className="w-4 h-4" /> Сделать или выбрать фото
+              </Button>
+            )}
+
+            {photoPreview && (
+              <div className="mt-2 flex gap-3">
+                <img
+                  src={photoPreview}
+                  alt="Фото блюда"
+                  className="w-20 h-20 rounded-lg object-cover border border-border shrink-0"
+                />
+                <div className="flex-1 min-w-0 flex items-center">
+                  {analyzing && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="w-4 h-4 animate-spin" /> Анализируем...
+                    </div>
+                  )}
+                  {photoError && !analyzing && (
+                    <div className="flex items-start gap-1.5 text-sm text-destructive">
+                      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>{photoError}</span>
+                    </div>
+                  )}
+                  {photoResult && !analyzing && photoResult.confidence === 'low' && (
+                    <p className="text-xs text-destructive">Низкая уверенность AI — проверьте цифры</p>
+                  )}
+                  {photoResult && !analyzing && photoResult.note && (
+                    <p className="text-xs text-muted-foreground">{photoResult.note}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {photoResult && !analyzing && (
+              <div className="mt-3 space-y-2">
+                <Input placeholder="Название" value={pName} onChange={(e) => setPName(e.target.value)} />
+                <div className="grid grid-cols-4 gap-2">
+                  <Input placeholder="Ккал" type="number" min="0" value={pCalories} onChange={(e) => setPCalories(e.target.value)} />
+                  <Input placeholder="Б" type="number" min="0" step="0.1" value={pProtein} onChange={(e) => setPProtein(e.target.value)} />
+                  <Input placeholder="Ж" type="number" min="0" step="0.1" value={pFat} onChange={(e) => setPFat(e.target.value)} />
+                  <Input placeholder="У" type="number" min="0" step="0.1" value={pCarbs} onChange={(e) => setPCarbs(e.target.value)} />
+                </div>
+                <div className="flex gap-2">
+                  <Button type="button" size="sm" onClick={handlePhotoAdd} className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground">
+                    Добавить в список
+                  </Button>
+                  <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                    Другое фото
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {photoError && !analyzing && (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                className="mt-2 w-full"
+              >
+                Попробовать снова
+              </Button>
+            )}
           </div>
 
           {/* Search */}
