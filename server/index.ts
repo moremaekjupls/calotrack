@@ -466,7 +466,7 @@ async function startServer() {
   }
 
   app.post('/api/analyze-meal-photo', async (req: Request, res: Response) => {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       res.status(503).json({ error: 'Анализ фото временно недоступен (не настроен API-ключ)' });
       return;
@@ -482,58 +482,56 @@ async function startServer() {
     const type = allowedTypes.includes(mediaType || '') ? (mediaType as string) : 'image/jpeg';
 
     try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-        },
-        body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: 400,
-          messages: [
-            {
-              role: 'user',
-              content: [
-                {
-                  type: 'image',
-                  source: { type: 'base64', media_type: type, data: image },
-                },
-                {
-                  type: 'text',
-                  text:
-                    'Ты эксперт по питанию. Определи блюдо на фото и оцени его калорийность и БЖУ для порции, ' +
-                    'видимой на фото. Если блюд несколько — оцени всё вместе как одну порцию. ' +
-                    'Ответь СТРОГО валидным JSON без markdown-разметки и без пояснений вокруг, в формате: ' +
-                    '{"name": string на русском, "calories": число, "protein": число (г), "fat": число (г), ' +
-                    '"carbs": число (г), "confidence": "high"|"medium"|"low", "note": краткое пояснение оценки на русском}.',
-                },
-              ],
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  { inline_data: { mime_type: type, data: image } },
+                  {
+                    text:
+                      'Ты эксперт по питанию. Определи блюдо на фото и оцени его калорийность и БЖУ для порции, ' +
+                      'видимой на фото. Если блюд несколько — оцени всё вместе как одну порцию. ' +
+                      'Ответь СТРОГО валидным JSON без markdown-разметки и без пояснений вокруг, в формате: ' +
+                      '{"name": string на русском, "calories": число, "protein": число (г), "fat": число (г), ' +
+                      '"carbs": число (г), "confidence": "high"|"medium"|"low", "note": краткое пояснение оценки на русском}.',
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              responseMimeType: 'application/json',
+              maxOutputTokens: 400,
             },
-          ],
-        }),
-      });
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errText = await response.text();
-        console.error('Anthropic API error:', response.status, errText);
+        console.error('Gemini API error:', response.status, errText);
         res.status(502).json({ error: 'Не удалось проанализировать фото (ошибка AI-сервиса)' });
         return;
       }
 
-      const data = (await response.json()) as { content: { type: string; text?: string }[] };
-      const textBlock = data.content?.find((b) => b.type === 'text');
-      if (!textBlock?.text) {
+      const data = (await response.json()) as {
+        candidates?: { content?: { parts?: { text?: string }[] } }[];
+      };
+      const text = data.candidates?.[0]?.content?.parts?.find((p) => p.text)?.text;
+      if (!text) {
         res.status(502).json({ error: 'AI вернул пустой ответ' });
         return;
       }
 
       let result: PhotoAnalysisResult;
       try {
-        result = extractJson(textBlock.text);
+        result = extractJson(text);
       } catch {
-        console.error('Failed to parse AI JSON:', textBlock.text);
+        console.error('Failed to parse AI JSON:', text);
         res.status(502).json({ error: 'Не удалось разобрать ответ AI' });
         return;
       }
