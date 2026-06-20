@@ -1,16 +1,16 @@
 /**
  * WaterTracker Component
- * Visual glass-by-glass water intake tracker.
- * Tapping an empty glass logs one cup (CUP_ML). Long-press-free: a separate
- * "+custom" action covers other amounts, and undo removes the last log.
+ * Hero-style water intake tracker: one big glass with an animated liquid
+ * fill (level = % of daily goal). Tapping the glass logs one cup; quick-add
+ * chips below cover other common amounts, a separate "+custom" action
+ * covers anything else, and undo removes the last log.
  */
 
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { GlassWater, Plus, Undo2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { GlassWater, Plus, Undo2, Droplet } from 'lucide-react';
 
 const CUP_ML = 250;
 
@@ -27,11 +27,10 @@ export function WaterTracker({ consumed, goal, hasLogs, onAddCup, onAddCustom, o
   const [showCustom, setShowCustom] = useState(false);
   const [customMl, setCustomMl] = useState('');
 
-  const totalCups = Math.max(1, Math.round(goal / CUP_ML));
-  const filledCups = Math.min(totalCups, Math.floor(consumed / CUP_ML));
+  const percent = goal > 0 ? Math.round((consumed / goal) * 100) : 0;
+  const fillPercent = Math.min(100, Math.max(0, percent));
   const liters = (consumed / 1000).toFixed(1);
   const goalLiters = (goal / 1000).toFixed(1);
-  const percent = goal > 0 ? Math.round((consumed / goal) * 100) : 0;
 
   const handleCustomSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +44,7 @@ export function WaterTracker({ consumed, goal, hasLogs, onAddCup, onAddCustom, o
 
   return (
     <Card className="bg-gradient-to-br from-[color-mix(in_oklch,var(--chart-5)_14%,white)] to-card border-0 shadow-sm p-5 sm:p-6 animate-fade-in-up">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-full bg-[var(--chart-5)]/15 flex items-center justify-center">
             <GlassWater className="w-5 h-5 text-[var(--chart-5)]" />
@@ -76,40 +75,68 @@ export function WaterTracker({ consumed, goal, hasLogs, onAddCup, onAddCustom, o
         </div>
       </div>
 
-      {/* Hero readout: big percent + liters, sits above the cup grid */}
-      <div className="flex items-baseline gap-2 mb-4">
-        <span className="text-3xl sm:text-4xl font-display font-bold text-[var(--chart-5)] leading-none">
-          {percent}%
-        </span>
-        <span className="text-sm text-muted-foreground">
-          {liters} л / {goalLiters} л
-        </span>
+      {/* Hero glass: one vessel, liquid level = % of goal */}
+      <div className="flex flex-col items-center">
+        <button
+          type="button"
+          onClick={onAddCup}
+          title={`Добавить ${CUP_ML} мл`}
+          className="relative w-28 h-40 sm:w-32 sm:h-44 rounded-[16px_16px_40px_40px] border-[3px] border-[var(--chart-5)] bg-white/50 overflow-hidden transition-transform active:scale-95"
+        >
+          {/* liquid fill */}
+          <div
+            className="absolute bottom-0 left-0 right-0 bg-[var(--chart-5)] transition-all duration-700 ease-out flex items-start justify-center pt-2"
+            style={{ height: `${fillPercent}%` }}
+          >
+            <Droplet className="w-5 h-5 text-white/60 fill-white/30" />
+          </div>
+          {/* glass shine */}
+          <div className="absolute top-3 left-3 w-2 h-[65%] rounded-full bg-white/35" />
+        </button>
+
+        <div className="mt-3 text-center">
+          <span className="text-3xl sm:text-4xl font-display font-bold text-[var(--chart-5)] leading-none">
+            {percent}%
+          </span>
+          <p className="text-sm text-muted-foreground mt-1">
+            {liters} л / {goalLiters} л
+          </p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-6 gap-2 sm:gap-3">
-        {Array.from({ length: totalCups }).map((_, i) => {
-          const isFilled = i < filledCups;
-          return (
-            <button
-              key={i}
-              type="button"
-              onClick={!isFilled ? onAddCup : undefined}
-              className={cn(
-                'aspect-square rounded-xl flex items-center justify-center transition-all duration-200',
-                isFilled
-                  ? 'bg-[var(--chart-5)] text-white shadow-sm'
-                  : 'bg-[var(--chart-5)]/10 text-[var(--chart-5)]/50 hover:bg-[var(--chart-5)]/20 active:scale-90'
-              )}
-              title={isFilled ? `${CUP_ML} мл` : `Добавить ${CUP_ML} мл`}
-            >
-              <GlassWater className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
-          );
-        })}
+      {/* Quick-add chips */}
+      <div className="grid grid-cols-3 gap-2 mt-5">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onAddCup}
+          className="border-[var(--chart-5)]/30 text-[var(--chart-5)] hover:bg-[var(--chart-5)]/10"
+        >
+          +250 мл
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => onAddCustom(500)}
+          className="border-[var(--chart-5)]/30 text-[var(--chart-5)] hover:bg-[var(--chart-5)]/10"
+        >
+          +500 мл
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => onAddCustom(1000)}
+          className="border-[var(--chart-5)]/30 text-[var(--chart-5)] hover:bg-[var(--chart-5)]/10"
+        >
+          +1 л
+        </Button>
       </div>
 
       {showCustom && (
-        <form onSubmit={handleCustomSubmit} className="flex items-center gap-2 mt-4">
+        <form onSubmit={handleCustomSubmit} className="flex items-center gap-2 mt-3">
           <Input
             type="number"
             inputMode="numeric"
