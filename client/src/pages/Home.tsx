@@ -7,7 +7,6 @@ import { MealList } from '@/components/MealList';
 import { AddMealForm } from '@/components/AddMealForm';
 import { FoodPickerDialog } from '@/components/FoodPickerDialog';
 import { DateNavigator } from '@/components/DateNavigator';
-import { GoalSettingsDialog } from '@/components/GoalSettingsDialog';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Plus } from 'lucide-react';
@@ -17,7 +16,6 @@ export default function Home() {
   const [currentDate, setCurrentDate] = useState(getTodayISO());
   const [showPicker, setShowPicker] = useState(false);
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
-  const [showGoalDialog, setShowGoalDialog] = useState(false);
 
   const {
     summary,
@@ -26,7 +24,6 @@ export default function Home() {
     addEntries,
     updateEntry,
     deleteEntry,
-    updateGoal,
     addWater,
     removeLastWater,
   } = useDailyData(currentDate);
@@ -93,7 +90,6 @@ export default function Home() {
           <DailySummary
             summary={summary}
             waterLogs={waterLogs}
-            onEditGoal={() => setShowGoalDialog(true)}
             onAddWaterCup={() => addWater(250)}
             onAddWaterCustom={(ml) => addWater(ml)}
             onUndoWater={removeLastWater}
@@ -143,12 +139,6 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
-      <GoalSettingsDialog
-        open={showGoalDialog}
-        goal={summary.goal}
-        onSave={updateGoal}
-        onOpenChange={setShowGoalDialog}
-      />
     </div>
   );
 }
