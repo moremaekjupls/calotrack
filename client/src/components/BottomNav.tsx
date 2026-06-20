@@ -11,8 +11,11 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[oklch(0.97_0.01_240)]/82 backdrop-blur-xl backdrop-saturate-150 border-t border-[oklch(0.97_0.01_240)]/45">
-      <div className="flex">
+    <nav
+      className="fixed left-1/2 -translate-x-1/2 z-50"
+      style={{ bottom: 'calc(1rem + env(safe-area-inset-bottom))' }}
+    >
+      <div className="flex items-center gap-1 px-2 py-2 rounded-full bg-[oklch(0.97_0.01_240)]/88 backdrop-blur-xl backdrop-saturate-150 border border-[oklch(0.97_0.01_240)]/55 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.55),0_10px_28px_-8px_rgba(0,0,0,0.45)]">
         {tabs.map(tab => {
           const active = tab.path === '/' ? location === '/' : location.startsWith(tab.path);
           const Icon = tab.icon;
@@ -20,8 +23,8 @@ export function BottomNav() {
             <button
               key={tab.path}
               onClick={() => navigate(tab.path)}
-              className={`flex-1 flex flex-col items-center gap-1 py-3 transition-colors ${
-                active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+              className={`flex flex-col items-center gap-0.5 px-6 py-2 rounded-full transition-colors ${
+                active ? 'text-primary bg-primary/12' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               <Icon className="w-5 h-5" />
@@ -30,8 +33,6 @@ export function BottomNav() {
           );
         })}
       </div>
-      {/* iPhone home indicator safe area */}
-      <div className="h-safe-area-inset-bottom bg-[oklch(0.97_0.01_240)]/82" />
     </nav>
   );
 }
