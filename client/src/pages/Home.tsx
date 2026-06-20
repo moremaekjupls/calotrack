@@ -65,7 +65,7 @@ export default function Home() {
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-[oklch(0.97_0.012_70)]/32 backdrop-blur-xl backdrop-saturate-200 border-b border-[oklch(0.97_0.012_70)]/25">
+      <header className="sticky top-0 z-40 bg-[oklch(0.97_0.01_240)]/82 backdrop-blur-xl backdrop-saturate-150 border-b border-[oklch(0.97_0.01_240)]/45">
         <div className="container app-shell py-4 flex items-center justify-between">
           <h1 className="text-2xl font-display font-bold text-primary">CaloTrack</h1>
           <div className="flex items-center gap-2">
@@ -90,18 +90,9 @@ export default function Home() {
       </header>
 
       <main>
-        {/* Hero photo band — Uzbek spread, edge-to-edge. The date nav "floats"
-            on glass over its lower edge instead of sitting in a plain row. */}
-        <div className="relative h-52 sm:h-64 overflow-hidden">
-          <img
-            src="/images/hero-uzbek-spread.webp"
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[color-mix(in_oklch,var(--primary)_28%,transparent)] via-transparent to-background" />
-        </div>
-
-        <div className="container app-shell space-y-6 -mt-12 relative pb-2">
+        {/* No local hero band anymore — the photo is a single fixed
+            background behind the whole app (App.tsx), not duplicated here. */}
+        <div className="container app-shell space-y-6 pt-6 pb-2">
           <div className="glass rounded-2xl p-3">
             <DateNavigator date={currentDate} onDateChange={(d) => setCurrentDate(d)} />
           </div>

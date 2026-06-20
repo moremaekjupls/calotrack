@@ -11,7 +11,7 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[oklch(0.97_0.012_70)]/32 backdrop-blur-xl backdrop-saturate-200 border-t border-[oklch(0.97_0.012_70)]/25">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[oklch(0.97_0.01_240)]/82 backdrop-blur-xl backdrop-saturate-150 border-t border-[oklch(0.97_0.01_240)]/45">
       <div className="flex">
         {tabs.map(tab => {
           const active = tab.path === '/' ? location === '/' : location.startsWith(tab.path);
@@ -31,7 +31,7 @@ export function BottomNav() {
         })}
       </div>
       {/* iPhone home indicator safe area */}
-      <div className="h-safe-area-inset-bottom bg-[oklch(0.97_0.012_70)]/32" />
+      <div className="h-safe-area-inset-bottom bg-[oklch(0.97_0.01_240)]/82" />
     </nav>
   );
 }

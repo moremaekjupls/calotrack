@@ -124,7 +124,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "bg-[oklch(0.97_0.012_70)]/62 backdrop-blur-xl backdrop-saturate-200 border-[oklch(0.97_0.012_70)]/45 shadow-[inset_0_1px_0_0_rgba(255, 248, 238,0.55),0_8px_24px_-8px_rgba(0,0,0,0.3)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg p-6 duration-200 sm:max-w-lg",
+          "bg-[oklch(0.97_0.01_240)]/93 backdrop-blur-xl backdrop-saturate-150 border-[oklch(0.97_0.01_240)]/55 shadow-[inset_0_1px_0_0_rgba(255, 255, 255,0.55),0_8px_24px_-8px_rgba(0,0,0,0.3)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg p-6 duration-200 sm:max-w-lg",
           className
         )}
         onEscapeKeyDown={handleEscapeKeyDown}

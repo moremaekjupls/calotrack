@@ -39,8 +39,8 @@ export function MacroTile({ label, icon: Icon, consumed, goal, unit, color, isOv
 
   return (
     <Card className={cn(
-      'relative border border-[oklch(0.97_0.012_70)]/35 bg-[oklch(0.97_0.012_70)]/22 backdrop-blur-xl backdrop-saturate-200 animate-fade-in-up overflow-hidden',
-      'shadow-[inset_0_1px_0_0_rgba(255, 248, 238,0.55),0_8px_24px_-8px_rgba(0,0,0,0.35)]',
+      'relative border border-[oklch(0.97_0.01_240)]/55 bg-[oklch(0.97_0.01_240)]/85 backdrop-blur-xl backdrop-saturate-150 animate-fade-in-up overflow-hidden',
+      'shadow-[inset_0_1px_0_0_rgba(255, 255, 255,0.55),0_8px_24px_-8px_rgba(0,0,0,0.35)]',
       compact ? 'p-3 sm:p-4' : 'p-4 sm:p-5'
     )}>
       {sticker && (

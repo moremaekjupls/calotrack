@@ -44,103 +44,103 @@
 
 :root {
   /*
-   * Dappled Spice palette — sampled off the Liquid Glass hero photo
-   * (dark olive-charcoal shadow, golden dappled highlight, chili-red and
-   * herb-green food accents). Deepened/richer than the old "Vivid Wellness"
-   * pastel set so tiles read as jewel tones over a moody photo instead of
-   * candy-bright pastels that fought it:
-   *   chart-1 calories (terracotta) · chart-2 carbs (chili-rose)
-   *   chart-3 fat (mustard/ochre, was violet — ties to the bread/light, and
-   *   violet had nothing to do with the photo) · secondary protein (herb
-   *   green) · chart-5 water (deep sky blue)
+   * Cool Wellness palette — moved off the warm terracotta/chili scheme
+   * after on-device feedback: text over translucent glass kept reading
+   * poorly, and a calmer, cooler card colour reads better and more
+   * "premium app" than orange everywhere:
+   *   chart-1 calories (warm amber — keeps the flame-icon energy cue)
+   *   secondary protein (azure blue) · chart-3 fat (golden amber)
+   *   chart-2 carbs (fresh green) · chart-5 water (cyan)
+   * Brand primary is now a calm blue instead of coral, decoupled from
+   * calories' own warm accent.
    */
-  --primary: oklch(0.64 0.17 36);        /* Terracotta — brand + calories */
+  --primary: oklch(0.58 0.12 238);       /* Calm blue — brand, buttons, header */
   --primary-foreground: oklch(1 0 0);
-  --sidebar-primary: oklch(0.62 0.16 36);
+  --sidebar-primary: oklch(0.56 0.12 238);
   --sidebar-primary-foreground: oklch(1 0 0);
 
-  --chart-1: oklch(0.64 0.17 36);        /* Calories — terracotta */
-  --chart-2: oklch(0.64 0.17 359);       /* Carbs — chili-rose */
-  --chart-3: oklch(0.74 0.13 78);        /* Fat — mustard/ochre */
-  --chart-4: oklch(0.78 0.13 75);        /* Decorative — dappled gold */
-  --chart-5: oklch(0.60 0.12 232);       /* Water — deep sky blue */
+  --chart-1: oklch(0.70 0.17 45);        /* Calories — warm amber/flame */
+  --chart-2: oklch(0.62 0.15 145);       /* Carbs — fresh green */
+  --chart-3: oklch(0.74 0.14 70);        /* Fat — golden amber */
+  --chart-4: oklch(0.78 0.13 75);        /* Decorative — gold */
+  --chart-5: oklch(0.64 0.12 220);       /* Water — cyan */
 
   --radius: 1.25rem;                     /* Rounder, friendlier cards */
 
-  --background: oklch(0.97 0.012 75);    /* Warm cream — rarely visible now (photo sits behind it), kept for the few opaque dropdowns/chips */
-  --foreground: oklch(0.22 0.025 48);    /* Deep warm charcoal */
+  --background: oklch(0.97 0.01 240);    /* Cool near-white — rarely visible now (photo sits behind it) */
+  --foreground: oklch(0.22 0.02 250);    /* Deep cool navy-charcoal */
 
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.025 48);
+  --card-foreground: oklch(0.22 0.02 250);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.025 48);
+  --popover-foreground: oklch(0.22 0.02 250);
 
-  --secondary: oklch(0.56 0.14 148);     /* Protein — herb green */
+  --secondary: oklch(0.55 0.14 255);     /* Protein — azure/indigo blue, distinct from primary */
   --secondary-foreground: oklch(1 0 0);
 
-  --muted: oklch(0.94 0.01 70);
-  --muted-foreground: oklch(0.52 0.02 55);
+  --muted: oklch(0.94 0.008 240);
+  --muted-foreground: oklch(0.52 0.015 250);
 
-  --accent: oklch(0.91 0.04 36);         /* Soft terracotta tint for hovers/highlights */
-  --accent-foreground: oklch(0.38 0.1 36);
+  --accent: oklch(0.92 0.035 238);       /* Soft blue tint for hovers/highlights */
+  --accent-foreground: oklch(0.38 0.09 238);
 
-  --destructive: oklch(0.58 0.19 24);    /* Chili red — over-goal states */
+  --destructive: oklch(0.58 0.19 20);    /* Warm red — over-goal states (kept; red still means "too much" universally) */
   --destructive-foreground: oklch(1 0 0);
 
-  --border: oklch(0.90 0.008 70);
-  --input: oklch(0.95 0.008 70);
-  --ring: oklch(0.64 0.17 36);
+  --border: oklch(0.90 0.006 240);
+  --input: oklch(0.95 0.006 240);
+  --ring: oklch(0.58 0.12 238);
 
-  --sidebar: oklch(0.97 0.012 75);
-  --sidebar-foreground: oklch(0.22 0.025 48);
-  --sidebar-accent: oklch(0.64 0.17 36);
+  --sidebar: oklch(0.97 0.01 240);
+  --sidebar-foreground: oklch(0.22 0.02 250);
+  --sidebar-accent: oklch(0.58 0.12 238);
   --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(0.90 0.008 70);
-  --sidebar-ring: oklch(0.64 0.17 36);
+  --sidebar-border: oklch(0.90 0.006 240);
+  --sidebar-ring: oklch(0.58 0.12 238);
 }
 
 .dark {
-  --primary: oklch(0.66 0.16 36);
-  --primary-foreground: oklch(0.15 0.01 50);
-  --sidebar-primary: oklch(0.64 0.16 36);
-  --sidebar-primary-foreground: oklch(0.15 0.01 50);
+  --primary: oklch(0.60 0.11 238);
+  --primary-foreground: oklch(0.15 0.01 250);
+  --sidebar-primary: oklch(0.58 0.11 238);
+  --sidebar-primary-foreground: oklch(0.15 0.01 250);
 
-  --background: oklch(0.18 0.015 55);
-  --foreground: oklch(0.92 0.008 70);
+  --background: oklch(0.18 0.012 250);
+  --foreground: oklch(0.92 0.006 240);
 
-  --card: oklch(0.24 0.015 55);
-  --card-foreground: oklch(0.92 0.008 70);
-  --popover: oklch(0.24 0.015 55);
-  --popover-foreground: oklch(0.92 0.008 70);
+  --card: oklch(0.24 0.012 250);
+  --card-foreground: oklch(0.92 0.006 240);
+  --popover: oklch(0.24 0.012 250);
+  --popover-foreground: oklch(0.92 0.006 240);
 
-  --secondary: oklch(0.54 0.13 148);
-  --secondary-foreground: oklch(0.15 0.01 50);
+  --secondary: oklch(0.57 0.13 255);
+  --secondary-foreground: oklch(0.15 0.01 250);
 
-  --muted: oklch(0.30 0.015 55);
-  --muted-foreground: oklch(0.70 0.01 60);
+  --muted: oklch(0.30 0.012 250);
+  --muted-foreground: oklch(0.70 0.008 240);
 
-  --accent: oklch(0.30 0.06 36);
-  --accent-foreground: oklch(0.92 0.04 36);
+  --accent: oklch(0.30 0.05 238);
+  --accent-foreground: oklch(0.92 0.035 238);
 
-  --destructive: oklch(0.62 0.18 24);
+  --destructive: oklch(0.62 0.18 20);
   --destructive-foreground: oklch(1 0 0);
 
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.66 0.16 36);
+  --ring: oklch(0.60 0.11 238);
 
-  --chart-1: oklch(0.66 0.16 36);
-  --chart-2: oklch(0.62 0.16 359);
-  --chart-3: oklch(0.70 0.12 78);
+  --chart-1: oklch(0.72 0.16 45);
+  --chart-2: oklch(0.60 0.14 145);
+  --chart-3: oklch(0.72 0.13 70);
   --chart-4: oklch(0.74 0.12 75);
-  --chart-5: oklch(0.58 0.11 232);
+  --chart-5: oklch(0.62 0.11 220);
 
-  --sidebar: oklch(0.24 0.015 55);
-  --sidebar-foreground: oklch(0.92 0.008 70);
-  --sidebar-accent: oklch(0.66 0.16 36);
-  --sidebar-accent-foreground: oklch(0.15 0.01 50);
+  --sidebar: oklch(0.24 0.012 250);
+  --sidebar-foreground: oklch(0.92 0.006 240);
+  --sidebar-accent: oklch(0.60 0.11 238);
+  --sidebar-accent-foreground: oklch(0.15 0.01 250);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.66 0.16 36);
+  --sidebar-ring: oklch(0.60 0.11 238);
 }
 
 @layer base {
@@ -195,18 +195,18 @@
    * Use sparingly — backdrop-filter is GPU-heavy, reserve for hero
    * elements floating over photography, not for every card. */
   .glass {
-    /* Lighter + more saturated than the first pass: a heavy white tint
-     * flattens whatever photo is behind it into grey mush. Less tint,
-     * more saturate, and the glass actually picks up the colour behind it
-     * instead of becoming frosted plastic. Matches the cards' own
-     * bg-[oklch(...)]/22 formula in lib/glass.ts and friends. */
-    background: color-mix(in oklch, oklch(0.97 0.012 70) 24%, transparent);
-    backdrop-filter: blur(20px) saturate(200%);
-    -webkit-backdrop-filter: blur(20px) saturate(200%);
-    border: 1px solid color-mix(in oklch, oklch(0.97 0.012 70) 35%, transparent);
+    /* On-device testing showed low-opacity glass over a busy photo reads
+     * poorly no matter how much saturate compensates — legibility lost to
+     * a "see-through" effect. Mostly-opaque cool-tinted card instead, with
+     * just enough blur/saturate to feel soft rather than flat solid.
+     * Matches the cards' own bg-[oklch(...)]/85 formula in lib/glass.ts. */
+    background: color-mix(in oklch, oklch(0.97 0.01 240) 85%, transparent);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid color-mix(in oklch, oklch(0.97 0.01 240) 55%, transparent);
     box-shadow:
-      inset 0 1px 0 0 color-mix(in oklch, oklch(0.97 0.012 70) 65%, transparent),
-      0 8px 24px -8px color-mix(in oklch, black 25%, transparent);
+      inset 0 1px 0 0 color-mix(in oklch, white 70%, transparent),
+      0 8px 24px -8px color-mix(in oklch, black 20%, transparent);
   }
 
   .container {
