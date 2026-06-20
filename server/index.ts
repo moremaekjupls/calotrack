@@ -60,6 +60,10 @@ interface DbUser {
   email: string;
   password_hash: string;
   created_at: string;
+  name: string | null;
+  height_cm: number | null;
+  weight_kg: number | null;
+  birth_year: number | null;
 }
 
 interface DbWaterLog {
@@ -225,7 +229,13 @@ function computeSummary(entries: Entry[], goal: Goal, date: string, waterConsume
 const stmts = {
   // auth
   getUserByEmail: db.prepare<[string]>('SELECT * FROM users WHERE email = ?'),
-  getUserById: db.prepare<[string]>('SELECT id, email, created_at FROM users WHERE id = ?'),
+  getUserById: db.prepare<[string]>(
+    'SELECT id, email, created_at, name, height_cm, weight_kg, birth_year FROM users WHERE id = ?'
+  ),
+  updateProfile: db.prepare(
+    `UPDATE users SET name = @name, height_cm = @height_cm, weight_kg = @weight_kg,
+     birth_year = @birth_year WHERE id = @id`
+  ),
   insertUser: db.prepare(
     'INSERT INTO users (id, email, password_hash) VALUES (@id, @email, @password_hash)'
   ),
@@ -671,6 +681,64 @@ async function startServer() {
       return;
     }
     res.status(204).end();
+  });
+
+  // -------------------------------------------------------------------------
+  // Profile
+  // -------------------------------------------------------------------------
+
+  function rowToProfile(row: DbUser) {
+    return {
+      id: row.id,
+      email: row.email,
+      name: row.name,
+      heightCm: row.height_cm,
+      weightKg: row.weight_kg,
+      birthYear: row.birth_year,
+    };
+  }
+
+  app.get('/api/profile', (req: Request, res: Response) => {
+    const user = stmts.getUserById.get(req.userId) as DbUser | undefined;
+    if (!user) {
+      res.status(404).json({ error: 'Пользователь не найден' });
+      return;
+    }
+    res.json(rowToProfile(user));
+  });
+
+  app.put('/api/profile', (req: Request, res: Response) => {
+    const { name, heightCm, weightKg, birthYear } = req.body as {
+      name?: string | null;
+      heightCm?: number | null;
+      weightKg?: number | null;
+      birthYear?: number | null;
+    };
+
+    const currentYear = new Date().getFullYear();
+    if (heightCm != null && (heightCm <= 0 || heightCm > 300)) {
+      res.status(400).json({ error: 'Некорректный рост' });
+      return;
+    }
+    if (weightKg != null && (weightKg <= 0 || weightKg > 500)) {
+      res.status(400).json({ error: 'Некорректный вес' });
+      return;
+    }
+    if (birthYear != null && (birthYear < 1900 || birthYear > currentYear)) {
+      res.status(400).json({ error: 'Некорректный год рождения' });
+      return;
+    }
+
+    stmts.updateProfile.run({
+      id: req.userId,
+      name: name?.trim() || null,
+      height_cm: heightCm != null ? Number(heightCm) : null,
+      weight_kg: weightKg != null ? Number(weightKg) : null,
+      birth_year: birthYear != null ? Number(birthYear) : null,
+    });
+
+    const updated = stmts.getUserById.get(req.userId) as DbUser;
+    res.json(rowToProfile(updated));
   });
 
   // -------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-import { Entry, Goal, DailySummary, WaterLog } from '@/types';
+import { Entry, Goal, DailySummary, WaterLog, Profile } from '@/types';
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -34,6 +34,10 @@ export async function updateEntry(id: string, updates: Partial<Entry>): Promise<
 export async function deleteEntry(id: string): Promise<boolean> {
   await apiFetch<void>(`/api/entries/${encodeURIComponent(id)}`, { method: 'DELETE' });
   return true;
+}
+export async function getProfile(): Promise<Profile> { return apiFetch<Profile>('/api/profile'); }
+export async function updateProfile(profile: Partial<Omit<Profile, 'id' | 'email'>>): Promise<Profile> {
+  return apiFetch<Profile>('/api/profile', { method: 'PUT', body: JSON.stringify(profile) });
 }
 export async function getGoal(): Promise<Goal> { return apiFetch<Goal>('/api/goal'); }
 export async function setGoal(goal: Goal): Promise<Goal> {

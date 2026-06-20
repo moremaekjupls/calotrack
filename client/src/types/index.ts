@@ -12,6 +12,15 @@ export interface Entry {
   time?: string;       // HH:MM
 }
 
+export interface Profile {
+  id: string;
+  email: string;
+  name: string | null;
+  heightCm: number | null;
+  weightKg: number | null;
+  birthYear: number | null;
+}
+
 export interface Goal {
   calories: number;
   protein: number;

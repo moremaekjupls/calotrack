@@ -7,7 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { BottomNav } from "./components/BottomNav";
 import Home from "./pages/Home";
-import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 
 // Fixed, full-viewport photo background — sits behind every route so the
@@ -47,7 +47,7 @@ function AppContent() {
     <>
       <Switch>
         <Route path="/" component={Home} />
-        <Route path="/dashboard" component={Dashboard} />
+        <Route path="/profile" component={Profile} />
         <Route component={NotFound} />
       </Switch>
       <BottomNav />

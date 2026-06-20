@@ -10,9 +10,8 @@ import { DateNavigator } from '@/components/DateNavigator';
 import { GoalSettingsDialog } from '@/components/GoalSettingsDialog';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Plus, LogOut } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(getTodayISO());
@@ -20,7 +19,6 @@ export default function Home() {
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
   const [showGoalDialog, setShowGoalDialog] = useState(false);
 
-  const { logout } = useAuth();
   const {
     summary,
     waterLogs,
@@ -74,24 +72,13 @@ export default function Home() {
             <img src="/images/nura-mark.png" alt="" className="w-7 h-7" />
             Nura
           </h1>
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={() => setShowPicker(true)}
-              className="hidden sm:inline-flex rounded-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Добавить</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => logout()}
-              className="rounded-full text-muted-foreground hover:text-foreground"
-              title="Выйти"
-            >
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
+          <Button
+            onClick={() => setShowPicker(true)}
+            className="hidden sm:inline-flex rounded-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Добавить</span>
+          </Button>
         </div>
       </header>
 

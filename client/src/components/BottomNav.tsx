@@ -1,13 +1,13 @@
 import React from 'react';
 import { useLocation } from 'wouter';
-import { UtensilsCrossed, BarChart2 } from 'lucide-react';
+import { UtensilsCrossed, User } from 'lucide-react';
 
 export function BottomNav() {
   const [location, navigate] = useLocation();
 
   const tabs = [
     { path: '/', icon: UtensilsCrossed, label: 'Питание' },
-    { path: '/dashboard', icon: BarChart2, label: 'Дашборд' },
+    { path: '/profile', icon: User, label: 'Профиль' },
   ];
 
   return (

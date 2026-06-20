@@ -109,6 +109,30 @@ if (!hasWaterGoal) {
   db.exec(`ALTER TABLE goals ADD COLUMN water_goal_ml REAL NOT NULL DEFAULT 2000;`);
 }
 
+// ---------------------------------------------------------------------------
+// Migration: profile fields on users (name, height, weight, birth year)
+// ---------------------------------------------------------------------------
+
+const usersInfo = db.prepare("PRAGMA table_info(users)").all() as { name: string }[];
+const userCols = new Set(usersInfo.map((col) => col.name));
+
+if (!userCols.has('name')) {
+  console.log('[db] Migrating schema: adding users.name');
+  db.exec(`ALTER TABLE users ADD COLUMN name TEXT;`);
+}
+if (!userCols.has('height_cm')) {
+  console.log('[db] Migrating schema: adding users.height_cm');
+  db.exec(`ALTER TABLE users ADD COLUMN height_cm REAL;`);
+}
+if (!userCols.has('weight_kg')) {
+  console.log('[db] Migrating schema: adding users.weight_kg');
+  db.exec(`ALTER TABLE users ADD COLUMN weight_kg REAL;`);
+}
+if (!userCols.has('birth_year')) {
+  console.log('[db] Migrating schema: adding users.birth_year');
+  db.exec(`ALTER TABLE users ADD COLUMN birth_year INTEGER;`);
+}
+
 db.pragma('foreign_keys = ON');
 
 export default db;
