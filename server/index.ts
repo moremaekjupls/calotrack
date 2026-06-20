@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { nanoid } from 'nanoid';
-import { pbkdf2Sync, randomBytes } from 'crypto';
+import { pbkdf2Sync, randomBytes, timingSafeEqual } from 'crypto';
 import db from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -107,7 +107,15 @@ function verifyPassword(password: string, stored: string): boolean {
   const [salt, hash] = stored.split(':');
   if (!salt || !hash) return false;
   const verify = pbkdf2Sync(password, salt, 100_000, 64, 'sha512').toString('hex');
-  return hash === verify;
+  return safeCompare(hash, verify);
+}
+
+/** Constant-time string comparison — avoids leaking length/content via timing. */
+function safeCompare(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return timingSafeEqual(bufA, bufB);
 }
 
 
@@ -129,7 +137,7 @@ function parseCookies(header: string): Record<string, string> {
 function setAuthCookie(res: Response, token: string) {
   res.setHeader(
     'Set-Cookie',
-    `${AUTH_COOKIE}=${token}; Max-Age=${ONE_YEAR_S}; Path=/; HttpOnly; SameSite=Lax`
+    `${AUTH_COOKIE}=${token}; Max-Age=${ONE_YEAR_S}; Path=/; HttpOnly; SameSite=Lax; Secure`
   );
 }
 
@@ -294,6 +302,34 @@ const stmts = {
 };
 
 // ---------------------------------------------------------------------------
+// Lightweight in-memory rate limiting for auth-sensitive endpoints.
+// Resets on deploy/restart — that's an acceptable trade-off for this app's
+// scale and avoids pulling in a new dependency (and re-touching the pnpm
+// lockfile, which has broken Railway builds before).
+// ---------------------------------------------------------------------------
+
+const rateLimitHits = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
+const RATE_LIMIT_MAX = 20;
+
+function rateLimit(req: Request, res: Response, next: NextFunction) {
+  const key = req.ip || 'unknown';
+  const now = Date.now();
+  const entry = rateLimitHits.get(key);
+  if (!entry || entry.resetAt < now) {
+    rateLimitHits.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    next();
+    return;
+  }
+  if (entry.count >= RATE_LIMIT_MAX) {
+    res.status(429).json({ error: 'Слишком много попыток. Попробуйте позже.' });
+    return;
+  }
+  entry.count += 1;
+  next();
+}
+
+// ---------------------------------------------------------------------------
 // Auth middleware
 // ---------------------------------------------------------------------------
 
@@ -323,6 +359,7 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
 
 async function startServer() {
   const app = express();
+  app.set('trust proxy', 1);
   const server = createServer(app);
 
   app.use(express.json({ limit: '10mb' })); // base64 meal photos need headroom
@@ -332,7 +369,7 @@ async function startServer() {
   // -------------------------------------------------------------------------
 
   // POST /api/auth/register
-  app.post('/api/auth/register', (req: Request, res: Response) => {
+  app.post('/api/auth/register', rateLimit, (req: Request, res: Response) => {
     const { email, password } = req.body as { email?: string; password?: string };
 
     if (!email || !password) {
@@ -370,7 +407,7 @@ async function startServer() {
   });
 
   // POST /api/auth/login
-  app.post('/api/auth/login', (req: Request, res: Response) => {
+  app.post('/api/auth/login', rateLimit, (req: Request, res: Response) => {
     const { email, password } = req.body as { email?: string; password?: string };
 
     if (!email || !password) {
@@ -426,9 +463,12 @@ async function startServer() {
   // Admin
   // -------------------------------------------------------------------------
 
-  app.get('/api/admin/users', (req: Request, res: Response) => {
-    const adminKey = process.env.ADMIN_KEY || 'calotrack-admin-2024';
-    if (req.query.key !== adminKey) {
+  app.get('/api/admin/users', rateLimit, (req: Request, res: Response) => {
+    const adminKey = process.env.ADMIN_KEY;
+    const provided = typeof req.query.key === 'string' ? req.query.key : '';
+    // Fail closed: with no ADMIN_KEY configured in the environment, this
+    // route is unreachable — there is no hardcoded fallback secret anymore.
+    if (!adminKey || !safeCompare(provided, adminKey)) {
       res.status(403).json({ error: 'Доступ запрещён' });
       return;
     }

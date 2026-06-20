@@ -5,7 +5,10 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen pb-24">
       <header className="sticky top-0 z-50 bg-[oklch(0.97_0.01_240)]/82 backdrop-blur-xl backdrop-saturate-150 border-b border-[oklch(0.97_0.01_240)]/45">
-        <div className="container app-shell py-4 flex items-center justify-between">
+        <div
+          className="container app-shell py-4 flex items-center justify-between"
+          style={{ paddingTop: 'calc(1rem + env(safe-area-inset-top))' }}
+        >
           <h1 className="text-2xl font-display font-bold text-primary">Дашборд</h1>
         </div>
       </header>
