@@ -505,7 +505,8 @@ async function startServer() {
             ],
             generationConfig: {
               responseMimeType: 'application/json',
-              maxOutputTokens: 400,
+              maxOutputTokens: 500,
+              thinkingConfig: { thinkingBudget: 0 },
             },
           }),
         }
