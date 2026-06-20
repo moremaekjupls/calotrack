@@ -31,9 +31,7 @@ export default function Auth() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <span className="text-primary-foreground text-2xl font-bold">C</span>
-          </div>
+          <img src="/images/nura-mark.png" alt="" className="w-16 h-16 mx-auto mb-3" />
           <h1 className="text-2xl font-display font-bold text-foreground">Nura</h1>
           <p className="text-muted-foreground text-sm mt-1">Считай калории легко</p>
         </div>

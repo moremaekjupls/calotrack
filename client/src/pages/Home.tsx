@@ -67,7 +67,10 @@ export default function Home() {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-[oklch(0.97_0.01_240)]/82 backdrop-blur-xl backdrop-saturate-150 border-b border-[oklch(0.97_0.01_240)]/45">
         <div className="container app-shell py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-display font-bold text-primary">Nura</h1>
+          <h1 className="text-2xl font-display font-bold text-primary flex items-center gap-2">
+            <img src="/images/nura-mark.png" alt="" className="w-7 h-7" />
+            Nura
+          </h1>
           <div className="flex items-center gap-2">
             <Button
               onClick={() => setShowPicker(true)}
