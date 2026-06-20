@@ -152,4 +152,5 @@ if (!userCols.has('gender')) {
 
 db.pragma('foreign_keys = ON');
 
+export { dataDir, dbPath };
 export default db;

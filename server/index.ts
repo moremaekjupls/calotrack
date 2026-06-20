@@ -1,10 +1,11 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { createServer } from 'http';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { nanoid } from 'nanoid';
 import { pbkdf2Sync, randomBytes, timingSafeEqual } from 'crypto';
-import db from './db.js';
+import db, { dataDir } from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -355,6 +356,38 @@ function rateLimit(req: Request, res: Response, next: NextFunction) {
 }
 
 // ---------------------------------------------------------------------------
+// Database backups
+// Local on-volume rotating snapshots protect against bad migrations/logical
+// corruption, but a volume-level failure would take out the live DB and
+// these snapshots together. The admin /api/admin/backup route exists so the
+// file can also be pulled off-instance periodically — that's the real
+// safety net against total volume loss.
+// ---------------------------------------------------------------------------
+
+const BACKUP_DIR = path.join(dataDir, 'backups');
+const BACKUP_RETENTION_DAYS = 7;
+
+async function runBackup(): Promise<string | null> {
+  try {
+    if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR, { recursive: true });
+    const stamp = new Date().toISOString().slice(0, 10);
+    const dest = path.join(BACKUP_DIR, `nura-${stamp}.db`);
+    await db.backup(dest);
+
+    const cutoff = Date.now() - BACKUP_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+    for (const file of fs.readdirSync(BACKUP_DIR)) {
+      const full = path.join(BACKUP_DIR, file);
+      if (fs.statSync(full).mtimeMs < cutoff) fs.unlinkSync(full);
+    }
+    console.log('[backup] snapshot created:', dest);
+    return dest;
+  } catch (err) {
+    console.error('[backup] failed:', err);
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Auth middleware
 // ---------------------------------------------------------------------------
 
@@ -488,15 +521,30 @@ async function startServer() {
   // Admin
   // -------------------------------------------------------------------------
 
-  app.get('/api/admin/users', rateLimit, (req: Request, res: Response) => {
+  function checkAdminKey(req: Request, res: Response): boolean {
     const adminKey = process.env.ADMIN_KEY;
     const provided = typeof req.query.key === 'string' ? req.query.key : '';
-    // Fail closed: with no ADMIN_KEY configured in the environment, this
-    // route is unreachable — there is no hardcoded fallback secret anymore.
+    // Fail closed: with no ADMIN_KEY configured in the environment, these
+    // routes are unreachable — there is no hardcoded fallback secret.
     if (!adminKey || !safeCompare(provided, adminKey)) {
       res.status(403).json({ error: 'Доступ запрещён' });
+      return false;
+    }
+    return true;
+  }
+
+  app.get('/api/admin/backup', rateLimit, async (req: Request, res: Response) => {
+    if (!checkAdminKey(req, res)) return;
+    const dest = await runBackup();
+    if (!dest) {
+      res.status(500).json({ error: 'Не удалось создать бэкап' });
       return;
     }
+    res.download(dest);
+  });
+
+  app.get('/api/admin/users', rateLimit, (req: Request, res: Response) => {
+    if (!checkAdminKey(req, res)) return;
     const users = db.prepare(
       `SELECT u.id, u.email, u.created_at,
               COUNT(e.id) as entry_count,
@@ -950,6 +998,10 @@ async function startServer() {
   server.listen(port, () => {
     console.log(`Nura server running on http://localhost:${port}/`);
   });
+
+  // First snapshot shortly after boot (let migrations settle), then daily.
+  setTimeout(() => { runBackup(); }, 30_000);
+  setInterval(() => { runBackup(); }, 24 * 60 * 60 * 1000);
 }
 
 startServer().catch(console.error);
