@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trash2, Edit2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { GLASS_CARD } from '@/lib/glass';
 
 interface MealEntryProps {
   entry: Entry;
@@ -16,13 +17,11 @@ interface MealEntryProps {
   onDelete?: (id: string) => void;
 }
 
-const GLASS = 'backdrop-blur-xl backdrop-saturate-150 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.45),0_8px_24px_-8px_rgba(0,0,0,0.3)]';
-
-const mealTypeColors: Record<MealType, string> = {
-  breakfast: `bg-chart-4/25 border-chart-4/40 ${GLASS}`,
-  lunch: `bg-primary/25 border-primary/40 ${GLASS}`,
-  dinner: `bg-secondary/25 border-secondary/40 ${GLASS}`,
-  snack: `bg-chart-2/25 border-chart-2/40 ${GLASS}`,
+const mealTypeAccent: Record<MealType, string> = {
+  breakfast: 'text-chart-4',
+  lunch: 'text-primary',
+  dinner: 'text-secondary',
+  snack: 'text-chart-2',
 };
 
 const mealTypeLabels: Record<MealType, string> = {
@@ -34,16 +33,16 @@ const mealTypeLabels: Record<MealType, string> = {
 
 export function MealEntry({ entry, onEdit, onDelete }: MealEntryProps) {
   const mealType = entry.mealType || 'snack';
-  const colorClass = mealTypeColors[mealType];
+  const accentClass = mealTypeAccent[mealType];
 
   return (
-    <Card className={cn('border animate-fade-in-up transition-all hover:shadow-md', colorClass)}>
+    <Card className={cn('border animate-fade-in-up transition-all hover:shadow-md', GLASS_CARD)}>
       <div className="p-4 sm:p-5">
         <div className="flex items-start justify-between gap-4">
           {/* Main content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-semibold text-primary uppercase tracking-wide">
+              <span className={cn("text-xs font-semibold uppercase tracking-wide", accentClass)}>
                 {mealTypeLabels[mealType]}
               </span>
               {entry.time && (
