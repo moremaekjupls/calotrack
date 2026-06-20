@@ -65,8 +65,8 @@ export default function Home() {
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-[oklch(0.97_0.012_70)]/55 backdrop-blur-xl backdrop-saturate-150 border-b border-[oklch(0.97_0.012_70)]/30">
-        <div className="container py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-[oklch(0.97_0.012_70)]/32 backdrop-blur-xl backdrop-saturate-200 border-b border-[oklch(0.97_0.012_70)]/25">
+        <div className="container app-shell py-4 flex items-center justify-between">
           <h1 className="text-2xl font-display font-bold text-primary">CaloTrack</h1>
           <div className="flex items-center gap-2">
             <Button
@@ -101,7 +101,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-b from-[color-mix(in_oklch,var(--primary)_28%,transparent)] via-transparent to-background" />
         </div>
 
-        <div className="container space-y-6 -mt-12 relative pb-2">
+        <div className="container app-shell space-y-6 -mt-12 relative pb-2">
           <div className="glass rounded-2xl p-3">
             <DateNavigator date={currentDate} onDateChange={(d) => setCurrentDate(d)} />
           </div>

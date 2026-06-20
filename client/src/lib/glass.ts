@@ -14,10 +14,10 @@
 const SHINE = "shadow-[inset_0_1px_0_0_rgba(255, 248, 238,0.55),0_8px_24px_-8px_rgba(0,0,0,0.35)]";
 
 export const GLASS_CARD =
-  `bg-[oklch(0.97_0.012_70)]/45 backdrop-blur-xl backdrop-saturate-150 border-[oklch(0.97_0.012_70)]/40 ${SHINE}`;
+  `bg-[oklch(0.97_0.012_70)]/22 backdrop-blur-xl backdrop-saturate-200 border-[oklch(0.97_0.012_70)]/35 ${SHINE}`;
 
 export const GLASS_SURFACE =
-  `bg-[oklch(0.97_0.012_70)]/75 backdrop-blur-xl backdrop-saturate-150 border-[oklch(0.97_0.012_70)]/50 ${SHINE}`;
+  `bg-[oklch(0.97_0.012_70)]/62 backdrop-blur-xl backdrop-saturate-200 border-[oklch(0.97_0.012_70)]/45 ${SHINE}`;
 
 export const GLASS_BAR =
-  "bg-[oklch(0.97_0.012_70)]/55 backdrop-blur-xl backdrop-saturate-150 border-[oklch(0.97_0.012_70)]/30";
+  "bg-[oklch(0.97_0.012_70)]/32 backdrop-blur-xl backdrop-saturate-200 border-[oklch(0.97_0.012_70)]/25";

@@ -43,7 +43,7 @@ export function WaterTracker({ consumed, goal, hasLogs, onAddCup, onAddCustom, o
   };
 
   return (
-    <Card className="bg-gradient-to-br from-[color-mix(in_oklch,var(--chart-5)_22%,white)]/60 to-white/45 backdrop-blur-xl backdrop-saturate-150 border border-[oklch(0.97_0.012_70)]/40 shadow-[inset_0_1px_0_0_rgba(255, 248, 238,0.55),0_8px_24px_-8px_rgba(0,0,0,0.35)] p-5 sm:p-6 animate-fade-in-up">
+    <Card className="bg-gradient-to-br from-[color-mix(in_oklch,var(--chart-5)_28%,white)]/35 to-white/22 backdrop-blur-xl backdrop-saturate-200 border border-[oklch(0.97_0.012_70)]/40 shadow-[inset_0_1px_0_0_rgba(255, 248, 238,0.55),0_8px_24px_-8px_rgba(0,0,0,0.35)] p-5 sm:p-6 animate-fade-in-up">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-full bg-[var(--chart-5)]/15 flex items-center justify-center">
@@ -81,7 +81,7 @@ export function WaterTracker({ consumed, goal, hasLogs, onAddCup, onAddCustom, o
           type="button"
           onClick={onAddCup}
           title={`Добавить ${CUP_ML} мл`}
-          className="relative w-28 h-40 sm:w-32 sm:h-44 rounded-[16px_16px_40px_40px] border-[3px] border-[var(--chart-5)] bg-[oklch(0.97_0.012_70)]/50 overflow-hidden transition-transform active:scale-95"
+          className="relative w-28 h-40 sm:w-32 sm:h-44 rounded-[16px_16px_40px_40px] border-[3px] border-[var(--chart-5)] bg-[oklch(0.97_0.012_70)]/28 overflow-hidden transition-transform active:scale-95"
         >
           {/* liquid fill */}
           <div
@@ -91,7 +91,7 @@ export function WaterTracker({ consumed, goal, hasLogs, onAddCup, onAddCustom, o
             <Droplet className="w-5 h-5 text-white/60 fill-white/30" />
           </div>
           {/* glass shine */}
-          <div className="absolute top-3 left-3 w-2 h-[65%] rounded-full bg-[oklch(0.97_0.012_70)]/35" />
+          <div className="absolute top-3 left-3 w-2 h-[65%] rounded-full bg-[oklch(0.97_0.012_70)]/25" />
         </button>
 
         <div className="mt-3 text-center">

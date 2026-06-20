@@ -22,8 +22,8 @@ function AppBackground() {
         alt=""
         className="absolute inset-0 w-full h-full object-cover"
       />
-      <div className="absolute inset-0 bg-black/35" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[color-mix(in_oklch,var(--primary)_22%,transparent)] via-transparent to-black/30" />
+      <div className="absolute inset-0 bg-black/12" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[color-mix(in_oklch,var(--primary)_14%,transparent)] via-transparent to-black/20" />
     </div>
   );
 }

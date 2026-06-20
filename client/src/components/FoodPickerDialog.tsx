@@ -544,7 +544,7 @@ export function FoodPickerDialog({ open, onOpenChange, date, onAddBatch }: FoodP
         </div>
 
         {/* Sticky footer: live sum + commit */}
-        <div className="border-t border-[oklch(0.97_0.012_70)]/40 px-6 py-4 bg-[oklch(0.97_0.012_70)]/60 backdrop-blur-xl backdrop-saturate-150">
+        <div className="border-t border-[oklch(0.97_0.012_70)]/35 px-6 py-4 bg-[oklch(0.97_0.012_70)]/45 backdrop-blur-xl backdrop-saturate-200">
           {staged.length > 0 && (
             <div className="flex items-center justify-between text-sm mb-3">
               <span className="font-semibold text-foreground">🔥 {Math.round(totals.calories)} ккал</span>
