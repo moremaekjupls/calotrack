@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
@@ -9,6 +9,7 @@ import { BottomNav } from "./components/BottomNav";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
+import Privacy from "./pages/Privacy";
 
 // Fixed, full-viewport photo background — sits behind every route so the
 // liquid-glass cards have something to blur/refract. A dark scrim keeps
@@ -30,6 +31,13 @@ function AppBackground() {
 
 function AppContent() {
   const { user, loading } = useAuth();
+  const [location] = useLocation();
+
+  // Reachable whether or not you're logged in — linked from the
+  // registration consent checkbox before an account even exists yet.
+  if (location === "/privacy") {
+    return <Privacy />;
+  }
 
   if (loading) {
     return (

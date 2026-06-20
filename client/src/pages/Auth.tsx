@@ -1,4 +1,5 @@
 import { useState, FormEvent } from 'react';
+import { Link } from 'wouter';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Auth() {
@@ -6,12 +7,17 @@ export default function Auth() {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [consent, setConsent] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+    if (mode === 'register' && !consent) {
+      setError('Нужно согласиться с обработкой персональных данных');
+      return;
+    }
     setLoading(true);
     try {
       if (mode === 'login') {
@@ -89,6 +95,23 @@ export default function Auth() {
               />
             </div>
 
+            {mode === 'register' && (
+              <label className="flex items-start gap-2 text-xs text-muted-foreground cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  className="mt-0.5 shrink-0"
+                />
+                <span>
+                  Я согласен с{' '}
+                  <Link href="/privacy" className="text-primary underline">
+                    обработкой персональных данных
+                  </Link>
+                </span>
+              </label>
+            )}
+
             {error && (
               <div className="bg-destructive/10 text-destructive text-sm px-3 py-2 rounded-xl">
                 {error}
@@ -110,7 +133,9 @@ export default function Auth() {
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-4">
-          Данные хранятся только на вашем устройстве
+          <Link href="/privacy" className="underline hover:text-foreground">
+            Политика конфиденциальности
+          </Link>
         </p>
       </div>
     </div>
